@@ -50,4 +50,4 @@ In the `SettingActivity` class, I've added the ability for users to enter and sa
 The `TaskDetailActivity` class remains unchanged and is responsible for displaying task details based on the selected task.
 
 ![image](screenshots/TaskDetailsPage.png)
-![image](screenshots/TaskDetailsPage.png)
+![image](screenshots/TaskDetails2Page.png)
