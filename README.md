@@ -23,3 +23,31 @@ To view all of your tasks, click on the "All Tasks" button. This will open a new
 ![image](screenshots/homeScreen.png)
 ![image](screenshots/addTaskScreen.png)
 ![image](screenshots/allTasksScreen.png)
+
+## For next Lab (Lab 27)
+
+After editing the code, I have made the following changes:
+
+### MainActivity
+
+In the `MainActivity` class, I've updated the code to allow users to click on task buttons (Task 1 and Task 2) and navigate to the Task Detail page with the respective task names and settings page to enter his username and save it.
+
+![image](screenshots/NewHomeScreen.png)
+
+### Settings
+
+To access settings, click on the "Settings" button. In the settings page, you can enter and save your username. This username will be used in various parts of the app.
+
+### SettingActivity
+
+In the `SettingActivity` class, I've added the ability for users to enter and save their username. The username is stored in shared preferences and can be accessed throughout the app.
+
+![image](screenshots/settingPage.png)
+
+
+### TaskDetailActivity
+
+The `TaskDetailActivity` class remains unchanged and is responsible for displaying task details based on the selected task.
+
+![image](screenshots/TaskDetailsPage.png)
+![image](screenshots/TaskDetailsPage.png)
