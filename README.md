@@ -51,3 +51,31 @@ The `TaskDetailActivity` class remains unchanged and is responsible for displayi
 
 ![image](screenshots/TaskDetailsPage.png)
 ![image](screenshots/TaskDetails2Page.png)
+
+
+## For next Lab (Lab 28)
+
+
+Here are the key changes and updates:
+
+### MainActivity
+
+1. Added a `RecyclerView` to the main page of the app to display a list of tasks in a more organized manner. Users can now see their tasks in a scrollable list.
+
+2. Created a `TaskListRecyclerViewAdapter` to manage the data items in the `RecyclerView`. This adapter is responsible for binding task data to individual items in the list.
+
+3. Populated the `RecyclerView` with sample task data, including task titles, bodies, and states (NEW, ASSIGNED, IN_PROGRESS, COMPLETE).
+
+![image](screenshots/homeScreenForLab28.png)
+
+### TaskDetailActivity
+
+1. Modified the `TaskDetailActivity` to correctly handle the display of task details. Users can now click on a task in the list, and the app will navigate to the `TaskDetailActivity` with the selected task's name, body, and state displayed.
+
+2. Updated the code to correctly handle the task's state, ensuring that the task's state is displayed as a user-friendly string (e.g., "NEW" instead of "State.NEW").
+
+![image](screenshots/taskDetailsFroLab28.png)
+
+### User Interface
+
+1. Improved the user interface by displaying a more organized list of tasks on the main page using the `RecyclerView`.
