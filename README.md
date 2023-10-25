@@ -79,3 +79,27 @@ Here are the key changes and updates:
 ### User Interface
 
 1. Improved the user interface by displaying a more organized list of tasks on the main page using the `RecyclerView`.
+
+## For next Lab (Lab 29)
+
+### Adding Tasks to the Room Database
+
+1. **Database Integration:** I've integrated a Room database to store tasks. The "Add Task" page has been updated to allow users to add new tasks, and these tasks are now saved to the Room database.
+
+![image](screenshots/addTasklab29.png)
+
+2. **Task Class Updates:** I've made updates to the `Tasks` class to represent a table in the database, allowing for seamless interaction with the Room database.
+
+### Displaying Tasks in the RecyclerView
+
+1. **Data Fetching:** I've enhanced the home page by fetching tasks from the database and displaying them in a scrollable list using a `RecyclerView`. This provides users with an organized view of all their tasks.
+
+2. **Task List RecyclerView Adapter:** I've introduced the `TaskListRecyclerViewAdapter` to manage the data items in the `RecyclerView`. This adapter is responsible for binding task data to individual items in the list.
+
+![image](screenshots/homeScreenForLab29.png)
+
+### Task Detail Page
+
+1. **Task Detail Display:** The `TaskDetailActivity` now correctly displays task details based on the selected task. Users can click on a task in the list, and the app navigates to the `TaskDetailActivity` with the selected task's name, body, and state displayed.
+
+![image](screenshots/taskDetailsFroLab29.png)

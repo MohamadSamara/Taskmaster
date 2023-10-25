@@ -3,6 +3,7 @@ package com.love2code.taskmaster.activity;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Room;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,12 +12,10 @@ import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-
 import com.love2code.taskmaster.R;
-import com.love2code.taskmaster.activity.Enum.State;
 import com.love2code.taskmaster.activity.adapter.TaskListRecyclerViewAdapter;
+import com.love2code.taskmaster.activity.database.AppDatabase;
 import com.love2code.taskmaster.activity.model.Tasks;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +26,13 @@ public class MainActivity extends AppCompatActivity {
     public static final String TASK_NAME_TAG ="taskName";
     public static final String TASK_BODY_TAG ="taskBody";
     public static final String TASK_STATE_TAG ="taskState";
+    public static  final String DATABASE_NAME = "tasks";
+
+    AppDatabase appDatabase;
+
+    List<Tasks> tasks = null;
+
+    TaskListRecyclerViewAdapter adapter;
 
 
     @Override
@@ -36,8 +42,15 @@ public class MainActivity extends AppCompatActivity {
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-//        setUpTaskTwoButton();
-//        setUpTaskOneButton();
+        appDatabase = Room.databaseBuilder(
+                        getApplicationContext(),
+                        AppDatabase.class,
+                        DATABASE_NAME)
+                .fallbackToDestructiveMigration()
+                .allowMainThreadQueries()
+                .build();
+        tasks= appDatabase.taskDao().findAll();
+
 
         setUpTaskListRecyclerView();
 
@@ -83,27 +96,12 @@ public class MainActivity extends AppCompatActivity {
         String username = preferences.getString(SettingActivity.USERNAME_TAG, "No Username");
 
         ((TextView)findViewById(R.id.usernameTxt)).setText(getString(R.string.username_with_input, username));
+
+        tasks.clear();
+        tasks.addAll(appDatabase.taskDao().findAll());
+        adapter.notifyDataSetChanged();
     }
 
-//    private void setUpTaskOneButton() {
-//        Button taskOneButton = findViewById(R.id.btnTaskOne);
-//        taskOneButton.setOnClickListener(view -> {
-//            String taskOneName = taskOneButton.getText().toString();
-//            Intent goToDetailIntent = new Intent(MainActivity.this, TaskDetailActivity.class);
-//            goToDetailIntent.putExtra(MainActivity.TASK_NAME_TAG, taskOneName);
-//            startActivity(goToDetailIntent);
-//        });
-//    }
-
-//    private void setUpTaskTwoButton() {
-//        Button taskTwoButton = findViewById(R.id.btnTaskTow);
-//        taskTwoButton.setOnClickListener(view -> {
-//            String taskTwoName = taskTwoButton.getText().toString();
-//            Intent goToDetailIntent = new Intent(MainActivity.this, TaskDetailActivity.class);
-//            goToDetailIntent.putExtra(MainActivity.TASK_NAME_TAG, taskTwoName);
-//            startActivity(goToDetailIntent);
-//        });
-//    }
 
     private void setUpTaskListRecyclerView(){
         //TODO: step 1-1: Add a RecyclerView to the Activity in the WSYIWYG editor
@@ -115,24 +113,14 @@ public class MainActivity extends AppCompatActivity {
         taskListRecyclerView.setLayoutManager(layoutManager);
 
         //TODO: step 2-2: Make some data items
-        List<Tasks> tasks = new ArrayList<>();
-
-        tasks.add(new Tasks("title1" , "body 1" , State.NEW));
-        tasks.add(new Tasks("title2" , "body 2" , State.COMPLETE));
-        tasks.add(new Tasks("title3" , "body 3" , State.ASSIGNED));
-        tasks.add(new Tasks("title4" , "body 4" , State.COMPLETE));
-        tasks.add(new Tasks("title5" , "body 5" , State.IN_PROGRESS));
-        tasks.add(new Tasks("title6" , "body 6" , State.IN_PROGRESS));
-        tasks.add(new Tasks("title7" , "body 7" , State.NEW));
-        tasks.add(new Tasks("title8" , "body 8" , State.IN_PROGRESS));
-        tasks.add(new Tasks("title9" , "body 9" , State.COMPLETE));
-
+//        List<Tasks> tasks = new ArrayList<>();
 
         //TODO: step 1-5: create and attach the RecyclerView.Adapter
-        TaskListRecyclerViewAdapter adapter = new TaskListRecyclerViewAdapter(tasks, this);
+        adapter = new TaskListRecyclerViewAdapter(tasks, this);
         taskListRecyclerView.setAdapter(adapter);
 
     }
+
 
 
 
