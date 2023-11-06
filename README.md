@@ -103,3 +103,22 @@ Here are the key changes and updates:
 1. **Task Detail Display:** The `TaskDetailActivity` now correctly displays task details based on the selected task. Users can click on a task in the list, and the app navigates to the `TaskDetailActivity` with the selected task's name, body, and state displayed.
 
 ![image](screenshots/taskDetailsFroLab29.png)
+
+## For next Lab (Lab 31)
+
+1. **Ensured espresso tests are functional include :**
+   1. assert that important UI elements are displayed on the page
+   2. tap on a task, and assert that the resulting activity displays the name of that task
+   3. edit the user’s username, and assert that it says the correct thing on the homepage
+
+2. **Refactored The Code Preparing for the next lab (Remove the Room)**
+
+3. **Added New layout to Activity Like (LinearLayout, TableLayout) To be more Friendly**
+
+Picture For Tests Result : 
+
+![editTheUsernameTest.png](screenshots/editTheUsernameTest.png)
+
+![mainActivityTest.png](screenshots/mainActivityTest.png)
+
+![TapOnTaskTest.png](screenshots/TapOnTaskTest.png)

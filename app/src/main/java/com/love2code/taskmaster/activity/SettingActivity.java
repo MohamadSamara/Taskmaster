@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.widget.Button;
 import android.widget.EditText;
-
 import com.google.android.material.snackbar.Snackbar;
 import com.love2code.taskmaster.R;
 

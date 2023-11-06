@@ -22,4 +22,9 @@
     <string name="state">State</string>
     <string name="body">Body</string>
     <string name="title">Title</string>
+    <string name="task_title">Task Title</string>
+    <string name="task_description">Task Description</string>
+    <string name="total_task">Total Task:</string>
+    <string name="back">Back</string>
+    <string name="_0">0</string>
 </resources>
