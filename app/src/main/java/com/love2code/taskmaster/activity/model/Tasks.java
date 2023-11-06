@@ -1,14 +1,11 @@
 package com.love2code.taskmaster.activity.model;
 
-import androidx.room.Entity;
-import androidx.room.PrimaryKey;
-
 import com.love2code.taskmaster.activity.Enum.State;
 
 //TODO: step: 2-1: make data class
-@Entity
+
 public class Tasks {
-    @PrimaryKey(autoGenerate = true)
+
     private Long id;
     private String title;
     private String body;
