@@ -122,3 +122,10 @@ Picture For Tests Result :
 ![mainActivityTest.png](screenshots/mainActivityTest.png)
 
 ![TapOnTaskTest.png](screenshots/TapOnTaskTest.png)
+
+## For next Lab (Lab 32)
+
+1. Updated all references to the Task data to instead use AWS Amplify to access data in DynamoDB instead of in Room.
+2. Refactored Main Activity
+3. Modified Add Task form to save the data entered in as a Task to DynamoDB.
+
