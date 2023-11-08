@@ -20,20 +20,20 @@ import com.amplifyframework.core.model.query.predicate.QueryField;
 
 import static com.amplifyframework.core.model.query.predicate.QueryField.field;
 
-/** This is an auto generated class representing the Tasks type in your schema. */
+/** This is an auto generated class representing the Task type in your schema. */
 @SuppressWarnings("all")
 @ModelConfig(pluralName = "Tasks", type = Model.Type.USER, version = 1, authRules = {
   @AuthRule(allow = AuthStrategy.PUBLIC, operations = { ModelOperation.CREATE, ModelOperation.UPDATE, ModelOperation.DELETE, ModelOperation.READ })
 })
-public final class Tasks implements Model {
-  public static final QueryField ID = field("Tasks", "id");
-  public static final QueryField TITLE = field("Tasks", "title");
-  public static final QueryField BODY = field("Tasks", "body");
-  public static final QueryField STATE = field("Tasks", "state");
+public final class Task implements Model {
+  public static final QueryField ID = field("Task", "id");
+  public static final QueryField TITLE = field("Task", "title");
+  public static final QueryField DESCRIPTION = field("Task", "description");
+  public static final QueryField TASK_STATUS_ENUM = field("Task", "taskStatusEnum");
   private final @ModelField(targetType="ID", isRequired = true) String id;
   private final @ModelField(targetType="String", isRequired = true) String title;
-  private final @ModelField(targetType="String") String body;
-  private final @ModelField(targetType="State") State state;
+  private final @ModelField(targetType="String") String description;
+  private final @ModelField(targetType="TaskStatusEnum") TaskStatusEnum taskStatusEnum;
   private @ModelField(targetType="AWSDateTime", isReadOnly = true) Temporal.DateTime createdAt;
   private @ModelField(targetType="AWSDateTime", isReadOnly = true) Temporal.DateTime updatedAt;
   /** @deprecated This API is internal to Amplify and should not be used. */
@@ -50,12 +50,12 @@ public final class Tasks implements Model {
       return title;
   }
   
-  public String getBody() {
-      return body;
+  public String getDescription() {
+      return description;
   }
   
-  public State getState() {
-      return state;
+  public TaskStatusEnum getTaskStatusEnum() {
+      return taskStatusEnum;
   }
   
   public Temporal.DateTime getCreatedAt() {
@@ -66,11 +66,11 @@ public final class Tasks implements Model {
       return updatedAt;
   }
   
-  private Tasks(String id, String title, String body, State state) {
+  private Task(String id, String title, String description, TaskStatusEnum taskStatusEnum) {
     this.id = id;
     this.title = title;
-    this.body = body;
-    this.state = state;
+    this.description = description;
+    this.taskStatusEnum = taskStatusEnum;
   }
   
   @Override
@@ -80,13 +80,13 @@ public final class Tasks implements Model {
       } else if(obj == null || getClass() != obj.getClass()) {
         return false;
       } else {
-      Tasks tasks = (Tasks) obj;
-      return ObjectsCompat.equals(getId(), tasks.getId()) &&
-              ObjectsCompat.equals(getTitle(), tasks.getTitle()) &&
-              ObjectsCompat.equals(getBody(), tasks.getBody()) &&
-              ObjectsCompat.equals(getState(), tasks.getState()) &&
-              ObjectsCompat.equals(getCreatedAt(), tasks.getCreatedAt()) &&
-              ObjectsCompat.equals(getUpdatedAt(), tasks.getUpdatedAt());
+      Task task = (Task) obj;
+      return ObjectsCompat.equals(getId(), task.getId()) &&
+              ObjectsCompat.equals(getTitle(), task.getTitle()) &&
+              ObjectsCompat.equals(getDescription(), task.getDescription()) &&
+              ObjectsCompat.equals(getTaskStatusEnum(), task.getTaskStatusEnum()) &&
+              ObjectsCompat.equals(getCreatedAt(), task.getCreatedAt()) &&
+              ObjectsCompat.equals(getUpdatedAt(), task.getUpdatedAt());
       }
   }
   
@@ -95,8 +95,8 @@ public final class Tasks implements Model {
     return new StringBuilder()
       .append(getId())
       .append(getTitle())
-      .append(getBody())
-      .append(getState())
+      .append(getDescription())
+      .append(getTaskStatusEnum())
       .append(getCreatedAt())
       .append(getUpdatedAt())
       .toString()
@@ -106,11 +106,11 @@ public final class Tasks implements Model {
   @Override
    public String toString() {
     return new StringBuilder()
-      .append("Tasks {")
+      .append("Task {")
       .append("id=" + String.valueOf(getId()) + ", ")
       .append("title=" + String.valueOf(getTitle()) + ", ")
-      .append("body=" + String.valueOf(getBody()) + ", ")
-      .append("state=" + String.valueOf(getState()) + ", ")
+      .append("description=" + String.valueOf(getDescription()) + ", ")
+      .append("taskStatusEnum=" + String.valueOf(getTaskStatusEnum()) + ", ")
       .append("createdAt=" + String.valueOf(getCreatedAt()) + ", ")
       .append("updatedAt=" + String.valueOf(getUpdatedAt()))
       .append("}")
@@ -129,8 +129,8 @@ public final class Tasks implements Model {
    * @param id the id of the existing item this instance will represent
    * @return an instance of this model with only ID populated
    */
-  public static Tasks justId(String id) {
-    return new Tasks(
+  public static Task justId(String id) {
+    return new Task(
       id,
       null,
       null,
@@ -141,8 +141,8 @@ public final class Tasks implements Model {
   public CopyOfBuilder copyOfBuilder() {
     return new CopyOfBuilder(id,
       title,
-      body,
-      state);
+      description,
+      taskStatusEnum);
   }
   public interface TitleStep {
     BuildStep title(String title);
@@ -150,38 +150,38 @@ public final class Tasks implements Model {
   
 
   public interface BuildStep {
-    Tasks build();
+    Task build();
     BuildStep id(String id);
-    BuildStep body(String body);
-    BuildStep state(State state);
+    BuildStep description(String description);
+    BuildStep taskStatusEnum(TaskStatusEnum taskStatusEnum);
   }
   
 
   public static class Builder implements TitleStep, BuildStep {
     private String id;
     private String title;
-    private String body;
-    private State state;
+    private String description;
+    private TaskStatusEnum taskStatusEnum;
     public Builder() {
       
     }
     
-    private Builder(String id, String title, String body, State state) {
+    private Builder(String id, String title, String description, TaskStatusEnum taskStatusEnum) {
       this.id = id;
       this.title = title;
-      this.body = body;
-      this.state = state;
+      this.description = description;
+      this.taskStatusEnum = taskStatusEnum;
     }
     
     @Override
-     public Tasks build() {
+     public Task build() {
         String id = this.id != null ? this.id : UUID.randomUUID().toString();
         
-        return new Tasks(
+        return new Task(
           id,
           title,
-          body,
-          state);
+          description,
+          taskStatusEnum);
     }
     
     @Override
@@ -192,14 +192,14 @@ public final class Tasks implements Model {
     }
     
     @Override
-     public BuildStep body(String body) {
-        this.body = body;
+     public BuildStep description(String description) {
+        this.description = description;
         return this;
     }
     
     @Override
-     public BuildStep state(State state) {
-        this.state = state;
+     public BuildStep taskStatusEnum(TaskStatusEnum taskStatusEnum) {
+        this.taskStatusEnum = taskStatusEnum;
         return this;
     }
     
@@ -215,8 +215,8 @@ public final class Tasks implements Model {
   
 
   public final class CopyOfBuilder extends Builder {
-    private CopyOfBuilder(String id, String title, String body, State state) {
-      super(id, title, body, state);
+    private CopyOfBuilder(String id, String title, String description, TaskStatusEnum taskStatusEnum) {
+      super(id, title, description, taskStatusEnum);
       Objects.requireNonNull(title);
     }
     
@@ -226,20 +226,20 @@ public final class Tasks implements Model {
     }
     
     @Override
-     public CopyOfBuilder body(String body) {
-      return (CopyOfBuilder) super.body(body);
+     public CopyOfBuilder description(String description) {
+      return (CopyOfBuilder) super.description(description);
     }
     
     @Override
-     public CopyOfBuilder state(State state) {
-      return (CopyOfBuilder) super.state(state);
+     public CopyOfBuilder taskStatusEnum(TaskStatusEnum taskStatusEnum) {
+      return (CopyOfBuilder) super.taskStatusEnum(taskStatusEnum);
     }
   }
   
 
-  public static class TasksIdentifier extends ModelIdentifier<Tasks> {
+  public static class TaskIdentifier extends ModelIdentifier<Task> {
     private static final long serialVersionUID = 1L;
-    public TasksIdentifier(String id) {
+    public TaskIdentifier(String id) {
       super(id);
     }
   }

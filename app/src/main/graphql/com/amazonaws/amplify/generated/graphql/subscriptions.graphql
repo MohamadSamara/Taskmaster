@@ -1,68 +1,35 @@
 # this is an auto generated file. This will be overwritten
 
-subscription OnCreateTodo($filter: ModelSubscriptionTodoFilterInput) {
-  onCreateTodo(filter: $filter) {
-    id
-    name
-    description
-    createdAt
-    updatedAt
-    __typename
-  }
-}
-
-subscription OnUpdateTodo($filter: ModelSubscriptionTodoFilterInput) {
-  onUpdateTodo(filter: $filter) {
-    id
-    name
-    description
-    createdAt
-    updatedAt
-    __typename
-  }
-}
-
-subscription OnDeleteTodo($filter: ModelSubscriptionTodoFilterInput) {
-  onDeleteTodo(filter: $filter) {
-    id
-    name
-    description
-    createdAt
-    updatedAt
-    __typename
-  }
-}
-
-subscription OnCreateTasks($filter: ModelSubscriptionTasksFilterInput) {
-  onCreateTasks(filter: $filter) {
+subscription OnCreateTask($filter: ModelSubscriptionTaskFilterInput) {
+  onCreateTask(filter: $filter) {
     id
     title
-    body
-    state
+    description
+    taskStatusEnum
     createdAt
     updatedAt
     __typename
   }
 }
 
-subscription OnUpdateTasks($filter: ModelSubscriptionTasksFilterInput) {
-  onUpdateTasks(filter: $filter) {
+subscription OnUpdateTask($filter: ModelSubscriptionTaskFilterInput) {
+  onUpdateTask(filter: $filter) {
     id
     title
-    body
-    state
+    description
+    taskStatusEnum
     createdAt
     updatedAt
     __typename
   }
 }
 
-subscription OnDeleteTasks($filter: ModelSubscriptionTasksFilterInput) {
-  onDeleteTasks(filter: $filter) {
+subscription OnDeleteTask($filter: ModelSubscriptionTaskFilterInput) {
+  onDeleteTask(filter: $filter) {
     id
     title
-    body
-    state
+    description
+    taskStatusEnum
     createdAt
     updatedAt
     __typename

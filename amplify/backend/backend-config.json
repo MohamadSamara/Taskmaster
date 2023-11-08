@@ -7,9 +7,9 @@
           "additionalAuthenticationProviders": [],
           "defaultAuthentication": {
             "apiKeyConfig": {
-              "apiKeyExpirationDate": "2024-01-07T11:09:06.745Z",
+              "apiKeyExpirationDate": "2024-01-07T20:06:01.183Z",
               "apiKeyExpirationDays": 60,
-              "description": "this API key is for the modle to be generated in cloud"
+              "description": "mo"
             },
             "authenticationType": "API_KEY"
           }

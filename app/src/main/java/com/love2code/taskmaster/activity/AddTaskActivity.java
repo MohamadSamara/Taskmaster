@@ -12,9 +12,11 @@ import android.widget.Spinner;
 
 import com.amplifyframework.api.graphql.model.ModelMutation;
 import com.amplifyframework.core.Amplify;
-import com.amplifyframework.datastore.generated.model.State;
-import com.amplifyframework.datastore.generated.model.Tasks;
+import com.amplifyframework.datastore.generated.model.Task;
+import com.amplifyframework.datastore.generated.model.TaskStatusEnum;
 import com.love2code.taskmaster.R;
+
+import java.util.Date;
 
 public class AddTaskActivity extends AppCompatActivity {
 
@@ -31,7 +33,7 @@ public class AddTaskActivity extends AppCompatActivity {
         taskCategorySpinner.setAdapter(new ArrayAdapter<>(
                 this,
                 android.R.layout.simple_spinner_item,
-                State.values()));
+                TaskStatusEnum.values()));
 
 
 
@@ -42,19 +44,13 @@ public class AddTaskActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-//                Tasks newTasks = new Tasks(
-//                        ((EditText) findViewById(R.id.taskTitleEdtTxt)).getText().toString(),
-//                        ((EditText) findViewById(R.id.taskBodyEdtTxt)).getText().toString(),
-//                        State.fromString(taskCategorySpinner.getSelectedItem().toString())
-//                        );
-                // appDatabase.taskDao().insertATask(newTasks);
-
                 String title = ((EditText)findViewById(R.id.taskTitleEdtTxt)).getText().toString();
                 String body = ((EditText)findViewById(R.id.taskBodyEdtTxt)).getText().toString();
-                Tasks newTask = Tasks.builder()
+                String currentDateString = com.amazonaws.util.DateUtils.formatISO8601Date(new Date());
+                Task newTask = Task.builder()
                         .title(title)
-                        .body(body)
-                        .state((State) taskCategorySpinner.getSelectedItem()).build();
+                        .description(body)
+                        .taskStatusEnum((TaskStatusEnum) taskCategorySpinner.getSelectedItem()).build();
 
                 Amplify.API.mutate(
                         ModelMutation.create(newTask),

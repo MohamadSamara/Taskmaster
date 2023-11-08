@@ -1,86 +1,44 @@
 # this is an auto generated file. This will be overwritten
 
-mutation CreateTodo(
-  $input: CreateTodoInput!
-  $condition: ModelTodoConditionInput
+mutation CreateTask(
+  $input: CreateTaskInput!
+  $condition: ModelTaskConditionInput
 ) {
-  createTodo(input: $input, condition: $condition) {
-    id
-    name
-    description
-    createdAt
-    updatedAt
-    __typename
-  }
-}
-
-mutation UpdateTodo(
-  $input: UpdateTodoInput!
-  $condition: ModelTodoConditionInput
-) {
-  updateTodo(input: $input, condition: $condition) {
-    id
-    name
-    description
-    createdAt
-    updatedAt
-    __typename
-  }
-}
-
-mutation DeleteTodo(
-  $input: DeleteTodoInput!
-  $condition: ModelTodoConditionInput
-) {
-  deleteTodo(input: $input, condition: $condition) {
-    id
-    name
-    description
-    createdAt
-    updatedAt
-    __typename
-  }
-}
-
-mutation CreateTasks(
-  $input: CreateTasksInput!
-  $condition: ModelTasksConditionInput
-) {
-  createTasks(input: $input, condition: $condition) {
+  createTask(input: $input, condition: $condition) {
     id
     title
-    body
-    state
+    description
+    taskStatusEnum
     createdAt
     updatedAt
     __typename
   }
 }
 
-mutation UpdateTasks(
-  $input: UpdateTasksInput!
-  $condition: ModelTasksConditionInput
+mutation UpdateTask(
+  $input: UpdateTaskInput!
+  $condition: ModelTaskConditionInput
 ) {
-  updateTasks(input: $input, condition: $condition) {
+  updateTask(input: $input, condition: $condition) {
     id
     title
-    body
-    state
+    description
+    taskStatusEnum
     createdAt
     updatedAt
     __typename
   }
 }
 
-mutation DeleteTasks(
-  $input: DeleteTasksInput!
-  $condition: ModelTasksConditionInput
+mutation DeleteTask(
+  $input: DeleteTaskInput!
+  $condition: ModelTaskConditionInput
 ) {
-  deleteTasks(input: $input, condition: $condition) {
+  deleteTask(input: $input, condition: $condition) {
     id
     title
-    body
-    state
+    description
+    taskStatusEnum
     createdAt
     updatedAt
     __typename

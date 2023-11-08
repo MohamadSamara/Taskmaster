@@ -3,8 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#F8F8F8"
+    android:backgroundTint="#DAD1D1"
+    android:gravity="center"
     android:orientation="vertical"
     android:padding="16dp"
+    android:textAlignment="center"
     tools:context=".activity.MainActivity">
 
     <TextView
@@ -20,23 +24,24 @@
         android:layout_marginTop="32dp">
 
         <TableRow>
+
             <Button
                 android:id="@+id/allTasksBtn"
                 android:layout_width="0dp"
                 android:layout_height="62dp"
                 android:layout_weight="1"
-                android:text="@string/all_tasks"
-                />
+                android:text="@string/all_tasks" />
+
             <Button
                 android:id="@+id/btnSetting"
                 android:layout_width="0dp"
                 android:layout_height="62dp"
                 android:layout_weight="1"
-                android:text="@string/setting"
-                />
+                android:text="@string/setting" />
         </TableRow>
 
         <TableRow>
+
             <Button
                 android:id="@+id/addTaskBtn"
                 android:layout_width="0dp"
@@ -57,7 +62,9 @@
         android:id="@+id/taskListRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="204dp"
+        android:layout_gravity="center|center_horizontal|center_vertical"
         android:layout_marginTop="16dp"
-        android:background="#D31B1B"
-        android:backgroundTint="#2CD3FD" />
+        android:background="#DAD1D1"
+        android:backgroundTint="#CCCECF"
+        android:textAlignment="center" />
 </LinearLayout>

@@ -3,6 +3,7 @@ package com.love2code.taskmaster.activity;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -14,7 +15,7 @@ import android.widget.TextView;
 
 import com.amplifyframework.api.graphql.model.ModelQuery;
 import com.amplifyframework.core.Amplify;
-import com.amplifyframework.datastore.generated.model.Tasks;
+import com.amplifyframework.datastore.generated.model.Task;
 import com.love2code.taskmaster.R;
 import com.love2code.taskmaster.activity.adapter.TaskListRecyclerViewAdapter;
 
@@ -24,7 +25,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     SharedPreferences preferences;
-    List<Tasks> tasks = null;
+    List<Task> tasks = null;
     TaskListRecyclerViewAdapter adapter;
     public static final String TASK_NAME_TAG = "taskName";
     public static final String TASK_BODY_TAG = "taskBody";
@@ -43,32 +44,21 @@ public class MainActivity extends AppCompatActivity {
         tasks = new ArrayList<>();
 
         Amplify.API.query(
-                ModelQuery.list(Tasks.class),
-                success ->
-                {
-//                    if (success.getData() != null) {
-//                        tasks.clear();
-                    System.out.println("My data "+success);
-
-                        for (Tasks databaseTask : success.getData()) {
-                            Log.i("MyTest" , databaseTask.getBody());
-                            tasks.add(databaseTask);
-                        }
-//                    }
+                ModelQuery.list(Task.class),
+                success -> {
+                    Log.i(TAG, "Updated Tasks Successfully!");
+                    tasks.clear();
+                    for(Task databaseTask : success.getData()){
+                        tasks.add(databaseTask);
+                    }
                     runOnUiThread(() -> {
                         adapter.notifyDataSetChanged();
                     });
-                    Log.i(TAG, "Read Tasks successfully");
                 },
 
 
-                failure ->
-                {
-                    Log.i(TAG, "Failed to retrieve data from DynamoDB");
-                    Log.e(TAG, failure.toString());
-                }
+                failure -> Log.i(TAG, "failed with this response: ")
         );
-
 
 
         setUpTaskListRecyclerView();
@@ -124,8 +114,8 @@ public class MainActivity extends AppCompatActivity {
         RecyclerView taskListRecyclerView = (RecyclerView) findViewById(R.id.taskListRecyclerView);
 
         //TODO: step 1-3: set the layout manager of the RecyclerView to a LinerLayoutManager
-//        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-//        taskListRecyclerView.setLayoutManager(layoutManager);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+        taskListRecyclerView.setLayoutManager(layoutManager);
 
 
         //TODO: step 1-5: create and attach the RecyclerView.Adapter

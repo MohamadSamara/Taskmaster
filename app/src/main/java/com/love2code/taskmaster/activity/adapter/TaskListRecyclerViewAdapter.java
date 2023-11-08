@@ -8,7 +8,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import com.amplifyframework.datastore.generated.model.Tasks;
+
+import com.amplifyframework.datastore.generated.model.Task;
 import com.love2code.taskmaster.R;
 import com.love2code.taskmaster.activity.MainActivity;
 import com.love2code.taskmaster.activity.TaskDetailActivity;
@@ -20,13 +21,13 @@ import java.util.List;
  public class TaskListRecyclerViewAdapter extends RecyclerView.Adapter<TaskListRecyclerViewAdapter.TaskListViewHolder> {
 
      //TODO: step: 2-3: Hand in data items
-        List<Tasks> tasks;
+        List<Task> tasks;
 
      //TODO: step 3-2: Hand in the Activity context
         Context callingActivity;
 
      //TODO: step: 2-3: Hand in data items
-     public TaskListRecyclerViewAdapter(List<Tasks> tasks,Context callingActivity) {
+     public TaskListRecyclerViewAdapter(List<Task> tasks,Context callingActivity) {
          this.tasks = tasks;
          this.callingActivity=callingActivity;
      }
@@ -47,9 +48,9 @@ import java.util.List;
          //TODO: step 2-4: Bind data items to Fragment inside of ViewHolder
          TextView taskFragmentTextView = (TextView) holder.itemView.findViewById(R.id.taskFragmentTextView);
          String taskName = tasks.get(position).getTitle();
-         String taskBody = tasks.get(position).getBody();
-         String taskState = String.valueOf(tasks.get(position).getState());
-         taskFragmentTextView.setText(position +"- "+ taskName);
+         String taskBody = tasks.get(position).getDescription();
+         String taskState = String.valueOf(tasks.get(position).getTaskStatusEnum());
+         taskFragmentTextView.setText(position +" - "+ taskName);
 
          //TODO: step 3-3: create a onClickListener, make an intent inside it and call this intent with extra to go to another activity
          View productViewHolder = holder.itemView;
