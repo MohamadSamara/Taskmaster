@@ -56,6 +56,8 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/taskListRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp" />
+        android:layout_height="204dp"
+        android:layout_marginTop="16dp"
+        android:background="#D31B1B"
+        android:backgroundTint="#2CD3FD" />
 </LinearLayout>

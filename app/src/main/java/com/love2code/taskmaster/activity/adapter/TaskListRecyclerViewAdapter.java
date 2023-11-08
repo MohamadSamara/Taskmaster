@@ -8,11 +8,10 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import com.amplifyframework.datastore.generated.model.Tasks;
 import com.love2code.taskmaster.R;
-import com.love2code.taskmaster.activity.Enum.State;
 import com.love2code.taskmaster.activity.MainActivity;
 import com.love2code.taskmaster.activity.TaskDetailActivity;
-import com.love2code.taskmaster.activity.model.Tasks;
 import java.util.List;
 
 //TODO: step 1-4: Make a class whose purpose is to manage the RecyclerView
@@ -50,7 +49,7 @@ import java.util.List;
          String taskName = tasks.get(position).getTitle();
          String taskBody = tasks.get(position).getBody();
          String taskState = String.valueOf(tasks.get(position).getState());
-         taskFragmentTextView.setText(position +". "+ taskName);
+         taskFragmentTextView.setText(position +"- "+ taskName);
 
          //TODO: step 3-3: create a onClickListener, make an intent inside it and call this intent with extra to go to another activity
          View productViewHolder = holder.itemView;
