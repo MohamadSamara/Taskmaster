@@ -29,6 +29,15 @@
         android:hint="@string/enter_username"
         android:inputType="text" />
 
+    <Spinner
+        android:id="@+id/teamNameSpinner"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginStart="16dp"
+        android:layout_weight="0"
+        android:autofillHints="Team"
+        android:layout_margin="15dp"/>
+
     <Button
         android:id="@+id/saveUserSettingsButton"
         android:layout_width="wrap_content"

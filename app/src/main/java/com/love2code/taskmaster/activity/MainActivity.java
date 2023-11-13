@@ -13,9 +13,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.amplifyframework.api.graphql.model.ModelMutation;
 import com.amplifyframework.api.graphql.model.ModelQuery;
 import com.amplifyframework.core.Amplify;
 import com.amplifyframework.datastore.generated.model.Task;
+import com.amplifyframework.datastore.generated.model.Team;
 import com.love2code.taskmaster.R;
 import com.love2code.taskmaster.activity.adapter.TaskListRecyclerViewAdapter;
 
@@ -39,6 +41,37 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+//        Team team1 = Team.builder()
+//                .name("Mohamad Samara")
+//                .build();
+//
+//        Team team2 = Team.builder()
+//                .name("Team Name 2")
+//                .build();
+//
+//        Team team3 = Team.builder()
+//                .name("Team Name 3")
+//                .build();
+//
+//
+//               Amplify.API.mutate(
+//               ModelMutation.create(team1),
+//               successResponse -> Log.i(TAG, "MainActivity.onCreate(): made a Team successfully"),
+//               failureResponse -> Log.i(TAG, "MainActivity.onCreate(): Team failed with this response: "+failureResponse)
+//       );
+//        Amplify.API.mutate(
+//                ModelMutation.create(team2),
+//                successResponse -> Log.i(TAG, "MainActivity.onCreate(): made a Team successfully"),
+//                failureResponse -> Log.i(TAG, "MainActivity.onCreate(): Team failed with this response: "+failureResponse)
+//        );
+//        Amplify.API.mutate(
+//                ModelMutation.create(team3),
+//                successResponse -> Log.i(TAG, "MainActivity.onCreate(): made a Team successfully"),
+//                failureResponse -> Log.i(TAG, "MainActivity.onCreate(): Team failed with this response: "+failureResponse)
+//        );
+
+
+
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         tasks = new ArrayList<>();
@@ -48,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
                 success -> {
                     Log.i(TAG, "Updated Tasks Successfully!");
                     tasks.clear();
-                    for(Task databaseTask : success.getData()){
+                    for (Task databaseTask : success.getData()) {
                         tasks.add(databaseTask);
                     }
                     runOnUiThread(() -> {
@@ -104,6 +137,32 @@ public class MainActivity extends AppCompatActivity {
         String username = preferences.getString(SettingActivity.USERNAME_TAG, "No Username");
 
         ((TextView) findViewById(R.id.usernameTxt)).setText(getString(R.string.username_with_input, username));
+
+        String userTeamName = preferences.getString(SettingActivity.USER_TEAM_TAG, "No Team");
+
+        ((TextView) findViewById(R.id.teamNameTxt)).setText(getString(R.string.team_with_input, userTeamName));
+
+        Amplify.API.query(
+                ModelQuery.list(Task.class),
+                success -> {
+                    Log.i(TAG, "Updated Tasks Successfully!");
+                    tasks.clear();
+                    for(Task databaseTask : success.getData()){
+                        if (userTeamName.equals("No Team")){
+                            tasks.add(databaseTask);
+                        }
+                        else if (databaseTask.getTeamName().getName().equals(userTeamName)) {
+                            tasks.add(databaseTask);
+                        }
+                    }
+                    runOnUiThread(() -> {
+                        adapter.notifyDataSetChanged();
+                    });
+                },
+
+                failure -> Log.i(TAG, "failed with this response: ")
+        );
+
 
     }
 

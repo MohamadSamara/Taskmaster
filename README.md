@@ -129,3 +129,15 @@ Picture For Tests Result :
 2. Refactored Main Activity
 3. Modified Add Task form to save the data entered in as a Task to DynamoDB.
 
+## For next Lab (Lab 33)
+
+**Create a second entity for a team, which has a name and a list of tasks**
+
+1. Updated tasks to be owned by teams.
+2. Three default teams have been made; Mohamad Samara, Team Name 2, and Team Name 3.
+3. Spinner used to select a team when creating a task was added.
+4. Added ability to allow users to choose a team, and filter the tasks on the homepage corresponding to the chosen team.
+
+![Image](screenshots/lab33-3.png)
+![Image](screenshots/lab33-1.png)
+![Image](screenshots/lab33-2.png)
