@@ -138,5 +138,6 @@ Picture For Tests Result :
 3. Spinner used to select a team when creating a task was added.
 4. Added ability to allow users to choose a team, and filter the tasks on the homepage corresponding to the chosen team.
 
-![Image](screenshots/lab33-1.png)![Image](screenshots/lab33-2.png)
 ![Image](screenshots/lab33-3.png)
+![Image](screenshots/lab33-1.png)
+![Image](screenshots/lab33-2.png)
