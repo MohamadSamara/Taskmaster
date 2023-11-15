@@ -148,14 +148,17 @@ Picture For Tests Result :
 **I performed the following operations: deletion and modification**
 
 1. let's start with add new task : 
+
 ![Image](screenshots/lab34-1.png)
 ![Image](screenshots/lab34-2.png)
 
 2. Tap on this task and edit it
+
 ![Image](screenshots/lab34-3.png)
 ![Image](screenshots/lab34-4.png)
 ![Image](screenshots/lab34-6.png)
 
 3. Tap on it again and delete it
+
 ![Image](screenshots/lab34-5.png)
 
