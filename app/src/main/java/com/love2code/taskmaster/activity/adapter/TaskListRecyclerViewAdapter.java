@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.amplifyframework.datastore.generated.model.Task;
 import com.love2code.taskmaster.R;
+import com.love2code.taskmaster.activity.EditTaskActivity;
 import com.love2code.taskmaster.activity.MainActivity;
 import com.love2code.taskmaster.activity.TaskDetailActivity;
 import java.util.List;
@@ -47,6 +48,10 @@ import java.util.List;
 
          //TODO: step 2-4: Bind data items to Fragment inside of ViewHolder
          TextView taskFragmentTextView = (TextView) holder.itemView.findViewById(R.id.taskFragmentTextView);
+
+         Task task = tasks.get(position);
+
+
          String taskName = tasks.get(position).getTitle();
          String taskBody = tasks.get(position).getDescription();
          String taskState = String.valueOf(tasks.get(position).getTaskStatusEnum());
@@ -55,7 +60,9 @@ import java.util.List;
          //TODO: step 3-3: create a onClickListener, make an intent inside it and call this intent with extra to go to another activity
          View productViewHolder = holder.itemView;
          productViewHolder.setOnClickListener(view -> {
-             Intent goToOrderFormIntent = new Intent(callingActivity, TaskDetailActivity.class);
+             Intent goToOrderFormIntent = new Intent(callingActivity, EditTaskActivity.class);
+
+             goToOrderFormIntent.putExtra(MainActivity.MAIN_ID_TAG,  task.getId());
              goToOrderFormIntent.putExtra(MainActivity.TASK_NAME_TAG,  taskName);
              goToOrderFormIntent.putExtra(MainActivity.TASK_BODY_TAG,  taskBody);
              goToOrderFormIntent.putExtra(MainActivity.TASK_STATE_TAG, taskState);
