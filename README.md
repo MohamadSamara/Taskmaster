@@ -141,3 +141,21 @@ Picture For Tests Result :
 ![Image](screenshots/lab33-3.png)
 ![Image](screenshots/lab33-1.png)
 ![Image](screenshots/lab33-2.png)
+
+
+## For next Lab (Lab 34)
+
+**I performed the following operations: deletion and modification**
+
+1. let's start with add new task : 
+![Image](screenshots/lab34-1.png)
+![Image](screenshots/lab34-2.png)
+
+2. Tap on this task and edit it
+![Image](screenshots/lab34-3.png)
+![Image](screenshots/lab34-4.png)
+![Image](screenshots/lab34-6.png)
+
+3. Tap on it again and delete it
+![Image](screenshots/lab34-5.png)
+
