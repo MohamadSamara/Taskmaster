@@ -74,4 +74,17 @@
         android:background="#DAD1D1"
         android:backgroundTint="#CCCECF"
         android:textAlignment="center" />
+
+    <Button
+        android:id="@+id/taskListLoginButton"
+        android:layout_width="140dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
+        android:text="Login" />
+
+    <Button
+        android:id="@+id/taskListLogoutButton"
+        android:layout_width="140dp"
+        android:layout_height="wrap_content"
+        android:text="Log out" />
 </LinearLayout>
