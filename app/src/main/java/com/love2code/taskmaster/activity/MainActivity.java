@@ -11,7 +11,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.amplifyframework.api.graphql.model.ModelQuery;
+import com.amplifyframework.auth.AuthUserAttributeKey;
+import com.amplifyframework.auth.options.AuthSignUpOptions;
 import com.amplifyframework.core.Amplify;
 import com.amplifyframework.datastore.generated.model.Task;
 import com.love2code.taskmaster.R;
@@ -36,6 +40,71 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // first step, sign up
+       /* Amplify.Auth.signUp("mohamadsamara1211@gmail.com",
+                "mohamad123",
+                AuthSignUpOptions.builder()
+                        .userAttribute(AuthUserAttributeKey.email(), "mohamadsamara1211@gmail.com")
+                        .userAttribute(AuthUserAttributeKey.nickname(), "Samara")
+                        .build(),
+                good ->
+                {
+                    Log.i(TAG, "Signup succeeded: "+ good.toString());
+                },
+                bad ->
+                {
+                    Log.i(TAG, "Signup failed with username: "+ "mohamadsamara1211@gmail.com"+ " with this message: "+ bad.toString());
+                }
+        );*/
+
+
+
+        // next step, we need to verify the user
+        /*Amplify.Auth.confirmSignUp("mohamadsamara1211@gmail.com",
+                "676225",
+                success ->
+                {
+                    Log.i(TAG,"verification succeeded: "+ success.toString());
+
+                },
+                failure ->
+                {
+                    Log.i(TAG,"verification failed: "+ failure.toString());
+                }
+        );*/
+
+
+
+        // next, we want to log in to our system
+       /* Amplify.Auth.signIn("mohamadsamara1211@gmail.com",
+                "mohamad123",
+                success ->
+                {
+                    Log.i(TAG, "Login succeeded: "+success.toString());
+                },
+                failure ->
+                {
+                    Log.i(TAG, "Login failed: "+failure.toString());
+                }
+        );*/
+
+
+
+        // next we want to log out from out system
+       /* Amplify.Auth.signOut(
+                () ->
+                {
+                    Log.i(TAG,"Logout succeeded");
+                },
+                failure ->
+                {
+                    Log.i(TAG, "Logout failed");
+                }
+        );*/
+
+
+
 
 //        Team team1 = Team.builder()
 //                .name("Mohamad Samara")
@@ -124,6 +193,8 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(goToSettingIntent);
             }
         });
+
+        setUpLoginAndLogoutButton();
     }
 
     @Override
@@ -177,4 +248,40 @@ public class MainActivity extends AppCompatActivity {
         taskListRecyclerView.setAdapter(adapter);
 
     }
+
+
+    private void setUpLoginAndLogoutButton(){
+        Button loginButton = (Button) findViewById(R.id.taskListLoginButton);
+        loginButton.setOnClickListener(v ->
+        {
+            Intent goToLogInIntent = new Intent(MainActivity.this, LoginActivity.class);
+            startActivity(goToLogInIntent);
+        });
+
+        Button logoutButton = (Button) findViewById(R.id.taskListLogoutButton);
+        logoutButton.setOnClickListener(v->
+        {
+            Amplify.Auth.signOut(
+                    () ->
+                    {
+                        Log.i(TAG,"Logout succeeded");
+                        runOnUiThread(() ->
+                        {
+                            ((TextView)findViewById(R.id.usernameTxt)).setText("");
+                        });
+                        Intent goToLogInIntent = new Intent(MainActivity.this, LoginActivity.class);
+                        startActivity(goToLogInIntent);
+                    },
+                    failure ->
+                    {
+                        Log.i(TAG, "Logout failed");
+                        runOnUiThread(() ->
+                        {
+                            Toast.makeText(MainActivity.this, "Log out failed", Toast.LENGTH_LONG);
+                        });
+                    }
+            );
+        });
+    }
+
 }

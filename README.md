@@ -162,3 +162,14 @@ Picture For Tests Result :
 
 ![Image](screenshots/lab34-5.png)
 
+## For next Lab (Lab 36)
+
+**Cognito has been added to the Amplify setup. A user login and signup flow has been integrated into th app. Once the user has successfully logged in, their username is displayed at the top of the homepage**
+**Users can logout of the application**
+
+![Image](screenshots/lab36-2.png)
+![Image](screenshots/lab36-3.png)
+![Image](screenshots/lab36-4.png)
+![Image](screenshots/lab36-5.png)
+![Image](screenshots/lab36-6.png)
+
