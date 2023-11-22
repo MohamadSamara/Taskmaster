@@ -6,7 +6,7 @@
     "defaultAuthType": {
       "mode": "API_KEY",
       "expirationTime": 60,
-      "apiKeyExpirationDate": "2024-01-18T14:22:48.964Z",
+      "apiKeyExpirationDate": "2024-01-20T21:46:22.597Z",
       "keyDescription": "this api key for model to be generated in cloud"
     },
     "conflictResolution": {},

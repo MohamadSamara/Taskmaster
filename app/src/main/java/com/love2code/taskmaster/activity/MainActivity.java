@@ -14,12 +14,19 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.amplifyframework.api.graphql.model.ModelQuery;
+import com.amplifyframework.auth.AuthUser;
+import com.amplifyframework.auth.AuthUserAttribute;
 import com.amplifyframework.auth.AuthUserAttributeKey;
 import com.amplifyframework.auth.options.AuthSignUpOptions;
 import com.amplifyframework.core.Amplify;
 import com.amplifyframework.datastore.generated.model.Task;
 import com.love2code.taskmaster.R;
 import com.love2code.taskmaster.activity.adapter.TaskListRecyclerViewAdapter;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,8 +65,6 @@ public class MainActivity extends AppCompatActivity {
                 }
         );*/
 
-
-
         // next step, we need to verify the user
         /*Amplify.Auth.confirmSignUp("mohamadsamara1211@gmail.com",
                 "676225",
@@ -74,8 +79,6 @@ public class MainActivity extends AppCompatActivity {
                 }
         );*/
 
-
-
         // next, we want to log in to our system
        /* Amplify.Auth.signIn("mohamadsamara1211@gmail.com",
                 "mohamad123",
@@ -89,8 +92,6 @@ public class MainActivity extends AppCompatActivity {
                 }
         );*/
 
-
-
         // next we want to log out from out system
        /* Amplify.Auth.signOut(
                 () ->
@@ -102,9 +103,6 @@ public class MainActivity extends AppCompatActivity {
                     Log.i(TAG, "Logout failed");
                 }
         );*/
-
-
-
 
 //        Team team1 = Team.builder()
 //                .name("Mohamad Samara")
@@ -194,6 +192,35 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+        String emptyFilename= "emptyTestFileName";
+        File emptyFile = new File(getApplicationContext().getFilesDir(), emptyFilename);
+
+        try {
+            BufferedWriter emptyFileBufferedWriter= new BufferedWriter(new FileWriter(emptyFile));
+
+            emptyFileBufferedWriter.append("Some text here from Mohamad\nAnother lib from Mohamad");
+
+            emptyFileBufferedWriter.close();
+        }catch (IOException ioe){
+            Log.i(TAG, "could not write locally with filename: "+ emptyFilename);
+        }
+
+        String emptyFileS3Key = "someFileOnS3.txt";
+        Amplify.Storage.uploadFile(
+                emptyFileS3Key,
+                emptyFile,
+                success ->
+                {
+                    Log.i(TAG, "S3 upload succeeded and the Key is: " + success.getKey());
+                },
+                failure ->
+                {
+                    Log.i(TAG, "S3 upload failed! " + failure.getMessage());
+                }
+        );
+
+
         setUpLoginAndLogoutButton();
     }
 
@@ -201,9 +228,46 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        String username = preferences.getString(SettingActivity.USERNAME_TAG, "No Username");
+//        String username = preferences.getString(SettingActivity.USERNAME_TAG, "No Username");
+//        ((TextView) findViewById(R.id.usernameTxt)).setText(getString(R.string.username_with_input, username));
 
-        ((TextView) findViewById(R.id.usernameTxt)).setText(getString(R.string.username_with_input, username));
+
+        AuthUser authUser = Amplify.Auth.getCurrentUser();
+        String username="";
+        if (authUser == null){
+            Button loginButton = (Button) findViewById(R.id.taskListLoginButton);
+            loginButton.setVisibility(View.VISIBLE);
+            Button logoutButton = (Button) findViewById(R.id.taskListLogoutButton);
+            logoutButton.setVisibility(View.INVISIBLE);
+        }else{
+            username = authUser.getUsername();
+            Log.i(TAG, "Username is: "+ username);
+            Button loginButton = (Button) findViewById(R.id.taskListLoginButton);
+            loginButton.setVisibility(View.INVISIBLE);
+            Button logoutButton = (Button) findViewById(R.id.taskListLogoutButton);
+            logoutButton.setVisibility(View.VISIBLE);
+
+            String username2 = username; // ugly way for lambda hack
+            Amplify.Auth.fetchUserAttributes(
+                    success ->
+                    {
+                        Log.i(TAG, "Fetch user attributes succeeded for username: "+username2);
+                        for (AuthUserAttribute userAttribute: success){
+                            if(userAttribute.getKey().getKeyString().equals("email")){
+                                String userEmail = userAttribute.getValue();
+                                runOnUiThread(() ->
+                                {
+                                    ((TextView)findViewById(R.id.usernameTxt)).setText(userEmail);
+                                });
+                            }
+                        }
+                    },
+                    failure ->
+                    {
+                        Log.i(TAG, "Fetch user attributes failed: "+failure.toString());
+                    }
+            );
+        }
 
         String userTeamName = preferences.getString(SettingActivity.USER_TEAM_TAG, "No Team");
 

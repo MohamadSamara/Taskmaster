@@ -63,7 +63,7 @@ public class AddTaskActivity extends AppCompatActivity {
 
     private void setUpSpinners(){
 
-    teamSpinner = (Spinner) findViewById(R.id.addTaskTeamNameSpinner);
+        teamSpinner = (Spinner) findViewById(R.id.addTaskTeamNameSpinner);
 
 
         Amplify.API.query(
@@ -103,51 +103,51 @@ public class AddTaskActivity extends AppCompatActivity {
     }
 
 
-private void setUpSaveButton(){
+    private void setUpSaveButton(){
 
-    Button addTasksButton = (Button) findViewById(R.id.addTaskToTotalbtn);
-    addTasksButton.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
+        Button addTasksButton = (Button) findViewById(R.id.addTaskToTotalbtn);
+        addTasksButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
-            String title = ((EditText)findViewById(R.id.taskTitleEdtTxt)).getText().toString();
-            String body = ((EditText)findViewById(R.id.taskBodyEdtTxt)).getText().toString();
-            String currentDateString = com.amazonaws.util.DateUtils.formatISO8601Date(new Date());
-            String selectedTeamNameString = teamSpinner.getSelectedItem().toString();
+                String title = ((EditText)findViewById(R.id.taskTitleEdtTxt)).getText().toString();
+                String body = ((EditText)findViewById(R.id.taskBodyEdtTxt)).getText().toString();
+                String currentDateString = com.amazonaws.util.DateUtils.formatISO8601Date(new Date());
+                String selectedTeamNameString = teamSpinner.getSelectedItem().toString();
 
-            List<Team> teams=null;
-            try {
-                teams=teamFuture.get();
-            }catch (InterruptedException ie){
-                Log.e(TAG, " InterruptedException while getting TeamName");
-            }catch (ExecutionException ee){
-                Log.e(TAG," ExecutionException while getting TeamName");
+                List<Team> teams=null;
+                try {
+                    teams=teamFuture.get();
+                }catch (InterruptedException ie){
+                    Log.e(TAG, " InterruptedException while getting TeamName");
+                }catch (ExecutionException ee){
+                    Log.e(TAG," ExecutionException while getting TeamName");
+                }
+
+                Team selectedTeam = teams.stream().filter(c -> c.getName().equals(selectedTeamNameString)).findAny().orElseThrow(RuntimeException::new);
+
+
+
+                Task newTask = Task.builder()
+                        .title(title)
+                        .description(body)
+                        .taskStatusEnum((TaskStatusEnum) taskCategorySpinner.getSelectedItem())
+                        .teamName(selectedTeam)
+                        .build();
+
+                Amplify.API.mutate(
+                        ModelMutation.create(newTask),
+                        successResponse -> Log.i(TAG, "AddTaskActivity.onCreate(): made a Task successfully"),//success response
+                        failureResponse -> Log.e(TAG, "AddTaskActivity.onCreate(): failed with this response" + failureResponse)// in case we have a failed response
+                );
+
+                Snackbar.make(findViewById(R.id.addTaskActivity), "Task saved!", Snackbar.LENGTH_SHORT).show();
+
             }
-
-            Team selectedTeam = teams.stream().filter(c -> c.getName().equals(selectedTeamNameString)).findAny().orElseThrow(RuntimeException::new);
-
-
-
-            Task newTask = Task.builder()
-                    .title(title)
-                    .description(body)
-                    .taskStatusEnum((TaskStatusEnum) taskCategorySpinner.getSelectedItem())
-                    .teamName(selectedTeam)
-                    .build();
-
-            Amplify.API.mutate(
-                    ModelMutation.create(newTask),
-                    successResponse -> Log.i(TAG, "AddTaskActivity.onCreate(): made a Task successfully"),//success response
-                    failureResponse -> Log.e(TAG, "AddTaskActivity.onCreate(): failed with this response" + failureResponse)// in case we have a failed response
-            );
-
-            Snackbar.make(findViewById(R.id.addTaskActivity), "Task saved!", Snackbar.LENGTH_SHORT).show();
-
-        }
-    });
-}
-
-
-
-
+        });
     }
+
+
+
+
+}

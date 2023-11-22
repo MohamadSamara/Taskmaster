@@ -6,6 +6,7 @@ subscription OnCreateTask($filter: ModelSubscriptionTaskFilterInput) {
     title
     description
     taskStatusEnum
+    taskImageS3Key
     teamId
     teamName {
       id
@@ -26,6 +27,7 @@ subscription OnUpdateTask($filter: ModelSubscriptionTaskFilterInput) {
     title
     description
     taskStatusEnum
+    taskImageS3Key
     teamId
     teamName {
       id
@@ -46,6 +48,7 @@ subscription OnDeleteTask($filter: ModelSubscriptionTaskFilterInput) {
     title
     description
     taskStatusEnum
+    taskImageS3Key
     teamId
     teamName {
       id

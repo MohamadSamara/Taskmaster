@@ -9,6 +9,7 @@ mutation CreateTask(
     title
     description
     taskStatusEnum
+    taskImageS3Key
     teamId
     teamName {
       id
@@ -32,6 +33,7 @@ mutation UpdateTask(
     title
     description
     taskStatusEnum
+    taskImageS3Key
     teamId
     teamName {
       id
@@ -55,6 +57,7 @@ mutation DeleteTask(
     title
     description
     taskStatusEnum
+    taskImageS3Key
     teamId
     teamName {
       id
