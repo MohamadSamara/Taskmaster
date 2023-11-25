@@ -1,13 +1,24 @@
 package com.love2code.taskmaster.activity;
-
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.OpenableColumns;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 
 import com.amplifyframework.api.graphql.model.ModelMutation;
@@ -18,136 +29,277 @@ import com.amplifyframework.datastore.generated.model.TaskStatusEnum;
 import com.amplifyframework.datastore.generated.model.Team;
 import com.google.android.material.snackbar.Snackbar;
 import com.love2code.taskmaster.R;
-import com.love2code.taskmaster.activity.Enum.State;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 public class AddTaskActivity extends AppCompatActivity {
 
-    public static final String TAG = "AddTaskActivity";
+    public static final String TAG = "addTaskActivity";
+    private CompletableFuture<List<Team>> teamFuture = null;
+    private EditText titleEditText;
+    private EditText descriptionEditText;
+    private Spinner taskCategorySpinner = null;
+    private Spinner teamNameSpinner = null;
 
-    Spinner teamSpinner= null;
-    Spinner taskCategorySpinner= null;
-    CompletableFuture<List<Team>> teamFuture = new CompletableFuture<>();
+    ActivityResultLauncher<Intent> activityResultLauncher;
+
+    private String s3ImageKey = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_task);
 
         teamFuture = new CompletableFuture<>();
-        setUpSpinners();
+
+        activityResultLauncher = getImagePickingActivityResultLauncher();
+
+        setUpEditableUIElement();
         setUpSaveButton();
-
-        Spinner taskCategorySpinner = (Spinner) findViewById(R.id.addTaskCategorySpinner);
-        taskCategorySpinner.setAdapter(new ArrayAdapter<>(
-                this,
-                android.R.layout.simple_spinner_item,
-                TaskStatusEnum.values()));
-
-
-
-        Button back = (Button) findViewById(R.id.backbtn2);
-
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent goToMainIntent = new Intent(AddTaskActivity.this, MainActivity.class);
-                startActivity(goToMainIntent);
-            }
-        });
+        setUpAddImageButton();
+        updateImageButtons();
     }
 
-    private void setUpSpinners(){
+    private void setUpEditableUIElement() {
+        titleEditText = findViewById(R.id.taskTitleEdtTxt);
+        descriptionEditText = findViewById(R.id.taskBodyEdtTxt);
 
-        teamSpinner = (Spinner) findViewById(R.id.addTaskTeamNameSpinner);
+        setUpSpinners();
+    }
 
+    private void setUpSpinners() {
+        teamNameSpinner = findViewById(R.id.addTaskTeamNameSpinner);
 
         Amplify.API.query(
                 ModelQuery.list(Team.class),
-                success ->
-                {
-                    Log.i(TAG, "Read TeamName Successfully");
+                success -> {
+                    Log.i(TAG, "Read Team Name successfully!");
                     ArrayList<String> teamNames = new ArrayList<>();
                     ArrayList<Team> teams = new ArrayList<>();
-                    for(Team team: success.getData()){
+                    for (Team team : success.getData()) {
                         teams.add(team);
                         teamNames.add(team.getName());
                     }
                     teamFuture.complete(teams);
 
-                    runOnUiThread(() ->
-                    {
-                        teamSpinner.setAdapter(new ArrayAdapter<>(
+                    runOnUiThread(() -> {
+                        teamNameSpinner.setAdapter(new ArrayAdapter<>(
                                 this,
-                                (android.R.layout.simple_spinner_item),
-                                teamNames
-                        ));
+                                android.R.layout.simple_spinner_item,
+                                teamNames));
                     });
                 },
-                failure-> {
+                failure -> {
                     teamFuture.complete(null);
-                    Log.i(TAG, "Did not read TeamName successfully");
+                    Log.i(TAG, "Did not read Team Name successfully!");
                 }
         );
-        taskCategorySpinner = (Spinner) findViewById(R.id.addTaskCategorySpinner);
+
+        taskCategorySpinner = findViewById(R.id.addTaskCategorySpinner);
         taskCategorySpinner.setAdapter(new ArrayAdapter<>(
                 this,
                 android.R.layout.simple_spinner_item,
-                State.values()
-        ));
-
+                TaskStatusEnum.values()));
     }
 
+    private void setUpSaveButton() {
+        Button saveButton = findViewById(R.id.addTaskToTotalbtn);
+        saveButton.setOnClickListener(v -> {
+            saveTask(s3ImageKey);
+        });
+    }
 
-    private void setUpSaveButton(){
+    private void saveTask(String imageS3Key) {
+        List<Team> teams = null;
+        String teamToSaveString = teamNameSpinner.getSelectedItem().toString();
+        try {
+            teams = teamFuture.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
 
-        Button addTasksButton = (Button) findViewById(R.id.addTaskToTotalbtn);
-        addTasksButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        Team teamToSave = teams.stream().filter(c -> c.getName().equals(teamToSaveString)).findAny().orElseThrow(RuntimeException::new);
 
-                String title = ((EditText)findViewById(R.id.taskTitleEdtTxt)).getText().toString();
-                String body = ((EditText)findViewById(R.id.taskBodyEdtTxt)).getText().toString();
-                String currentDateString = com.amazonaws.util.DateUtils.formatISO8601Date(new Date());
-                String selectedTeamNameString = teamSpinner.getSelectedItem().toString();
+        Task taskToSave = Task.builder()
+                .title(titleEditText.getText().toString())
+                .description(descriptionEditText.getText().toString())
+                .teamName(teamToSave)
+                .taskStatusEnum(TaskCategoryFromString(taskCategorySpinner.getSelectedItem().toString()))
+                .taskImageS3Key(imageS3Key)
+                .build();
 
-                List<Team> teams=null;
-                try {
-                    teams=teamFuture.get();
-                }catch (InterruptedException ie){
-                    Log.e(TAG, " InterruptedException while getting TeamName");
-                }catch (ExecutionException ee){
-                    Log.e(TAG," ExecutionException while getting TeamName");
-                }
+        Amplify.API.mutate(
+                ModelMutation.create(taskToSave),
+                successResponse -> {
+                    Log.i(TAG, "AddTaskActivity.onCreate(): added a Task successfully");
+                    Snackbar.make(findViewById(R.id.addTaskActivity), "Task saved!", Snackbar.LENGTH_SHORT).show();
+                    finish(); // Close the activity after saving the task
+                },
+                failureResponse -> Log.i(TAG, "AddTaskActivity.onCreate(): failed with this response: " + failureResponse)
+        );
+    }
 
-                Team selectedTeam = teams.stream().filter(c -> c.getName().equals(selectedTeamNameString)).findAny().orElseThrow(RuntimeException::new);
+    private int getSpinnerIndex(Spinner spinner, String stringValueToCheck) {
+        for (int i = 0; i < spinner.getCount(); i++) {
+            if (spinner.getItemAtPosition(i).toString().equalsIgnoreCase(stringValueToCheck)) {
+                return i;
+            }
+        }
+        return 0;
+    }
 
+    private void setUpAddImageButton() {
+        Button addImageButton = findViewById(R.id.addTaskAddImageButton);
+        addImageButton.setOnClickListener(b -> {
+            launchImageSelectionIntent();
+        });
+    }
 
+    private void launchImageSelectionIntent() {
+        Intent imageFilePickingIntent = new Intent(Intent.ACTION_GET_CONTENT);
+        imageFilePickingIntent.setType("*/*");
+        imageFilePickingIntent.putExtra(Intent.EXTRA_MIME_TYPES, new String[]{"image/jpeg", "image/png"});
 
-                Task newTask = Task.builder()
-                        .title(title)
-                        .description(body)
-                        .taskStatusEnum((TaskStatusEnum) taskCategorySpinner.getSelectedItem())
-                        .teamName(selectedTeam)
-                        .build();
+        activityResultLauncher.launch(imageFilePickingIntent);
+    }
 
-                Amplify.API.mutate(
-                        ModelMutation.create(newTask),
-                        successResponse -> Log.i(TAG, "AddTaskActivity.onCreate(): made a Task successfully"),//success response
-                        failureResponse -> Log.e(TAG, "AddTaskActivity.onCreate(): failed with this response" + failureResponse)// in case we have a failed response
-                );
+    private void updateImageButtons() {
+        Button addImageButton = findViewById(R.id.addTaskAddImageButton);
+        Button deleteImageButton = findViewById(R.id.addTaskDeleteImageButton);
 
-                Snackbar.make(findViewById(R.id.addTaskActivity), "Task saved!", Snackbar.LENGTH_SHORT).show();
-
+        runOnUiThread(() -> {
+            if (s3ImageKey == null || s3ImageKey.isEmpty()) {
+                deleteImageButton.setVisibility(View.INVISIBLE);
+                addImageButton.setVisibility(View.VISIBLE);
+            } else {
+                deleteImageButton.setVisibility(View.VISIBLE);
+                addImageButton.setVisibility(View.INVISIBLE);
             }
         });
     }
 
+    private void switchFromDeleteButtonToAddButton(Button deleteImageButton) {
+        Button addImageButton = findViewById(R.id.addTaskAddImageButton);
+        deleteImageButton.setVisibility(View.INVISIBLE);
+        addImageButton.setVisibility(View.VISIBLE);
+    }
 
+    private void switchFromAddButtonToDeleteButton(Button addImageButton) {
+        Button deleteImageButton = findViewById(R.id.addTaskDeleteImageButton);
+        deleteImageButton.setVisibility(View.VISIBLE);
+        addImageButton.setVisibility(View.INVISIBLE);
+    }
 
+    private ActivityResultLauncher<Intent> getImagePickingActivityResultLauncher() {
+        return registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        Button addImageButton = findViewById(R.id.addTaskAddImageButton);
+                        if (result.getResultCode() == Activity.RESULT_OK) {
+                            if (result.getData() != null) {
+                                Uri pickedImageFileUri = result.getData().getData();
+                                try {
+                                    InputStream pickedImageInputStream = getContentResolver().openInputStream(pickedImageFileUri);
+                                    String pickedImageFilename = getFileNameFromUri(pickedImageFileUri);
+                                    Log.i(TAG, "Succeeded in getting input stream from file on phone! Filename is: " + pickedImageFilename);
+                                    switchFromAddButtonToDeleteButton(addImageButton);
+                                    uploadInputStreamToS3(pickedImageInputStream, pickedImageFilename, pickedImageFileUri);
 
+                                } catch (FileNotFoundException fnfe) {
+                                    Log.e(TAG, "Could not get file from file picker! " + fnfe.getMessage(), fnfe);
+                                }
+                            }
+                        } else {
+                            Log.e(TAG, "Activity result error in ActivityResultLauncher.onActivityResult");
+                        }
+                    }
+                }
+        );
+    }
+
+    private void uploadInputStreamToS3(InputStream pickedImageInputStream, String pickedImageFilename, Uri pickedImageFileUri) {
+        Amplify.Storage.uploadInputStream(
+                pickedImageFilename,  // S3 key
+                pickedImageInputStream,
+                success -> {
+                    Log.i(TAG, "Succeeded in getting file uploaded to S3! Key is: " + success.getKey());
+                    s3ImageKey = success.getKey();
+                    updateImageButtons();
+                    ImageView taskImageView = findViewById(R.id.addTaskImageImageView);
+                    InputStream pickedImageInputStreamCopy = null;
+
+                    try {
+                        pickedImageInputStreamCopy = getContentResolver().openInputStream(pickedImageFileUri);
+                    } catch (FileNotFoundException fnfe) {
+                        Log.e(TAG, "Could not get file stream from URI! " + fnfe.getMessage(), fnfe);
+                    }
+
+                    taskImageView.setImageBitmap(BitmapFactory.decodeStream(pickedImageInputStreamCopy));
+                },
+                failure -> {
+                    Log.e(TAG, "Failure in uploading file to S3 with filename: " + pickedImageFilename + " with error: " + failure.getMessage());
+                }
+        );
+    }
+
+    private void setUpDeleteImageButton() {
+        Button deleteImageButton = findViewById(R.id.addTaskDeleteImageButton);
+        deleteImageButton.setOnClickListener(v -> {
+            Amplify.Storage.remove(
+                    s3ImageKey,
+                    success -> {
+                        Log.i(TAG, "Succeeded in deleting file on S3! Key is: " + success.getKey());
+                    },
+                    failure -> {
+                        Log.e(TAG, "Failure in deleting file on S3 with key: " + s3ImageKey + " with error: " + failure.getMessage());
+                    }
+            );
+
+            ImageView taskImageView = findViewById(R.id.addTaskImageImageView);
+            taskImageView.setImageResource(android.R.color.transparent);
+
+            switchFromDeleteButtonToAddButton(deleteImageButton);
+        });
+    }
+
+    // The rest of the code remains unchanged
+
+    @SuppressLint("Range")
+    public String getFileNameFromUri(Uri uri) {
+        String result = null;
+        if (uri.getScheme().equals("content")) {
+            Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+            try {
+                if (cursor != null && cursor.moveToFirst()) {
+                    result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                }
+            } finally {
+                cursor.close();
+            }
+        }
+        if (result == null) {
+            result = uri.getPath();
+            int cut = result.lastIndexOf('/');
+            if (cut != -1) {
+                result = result.substring(cut + 1);
+            }
+        }
+        return result;
+    }
+
+    public static TaskStatusEnum TaskCategoryFromString(String inputTaskStateEnumText){
+        for (TaskStatusEnum taskStatusEnum : TaskStatusEnum.values()){
+            if(taskStatusEnum.toString().equals(inputTaskStateEnumText)){
+                return taskStatusEnum;
+            }
+        }
+        return null;
+    }
 }
