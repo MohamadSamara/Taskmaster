@@ -80,8 +80,8 @@ public class MainActivity extends AppCompatActivity {
         );*/
 
         // next, we want to log in to our system
-       /* Amplify.Auth.signIn("mohamadsamara1211@gmail.com",
-                "mohamad123",
+/*        Amplify.Auth.signIn("mohamadsamara1211@gmail.com",
+                "mohamad@123",
                 success ->
                 {
                     Log.i(TAG, "Login succeeded: "+success.toString());
@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
         );*/
 
         // next we want to log out from out system
-       /* Amplify.Auth.signOut(
+/*        Amplify.Auth.signOut(
                 () ->
                 {
                     Log.i(TAG,"Logout succeeded");

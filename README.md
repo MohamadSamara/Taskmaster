@@ -173,3 +173,11 @@ Picture For Tests Result :
 ![Image](screenshots/lab36-5.png)
 ![Image](screenshots/lab36-6.png)
 
+
+## For next Lab (Lab 37)
+
+**Users can optionally select a file to attach to a task. If a user attaches a file to a task, the file is uploaded to S3, and associated with that task**
+
+![Image](screenshots/lab37-1.png)
+![Image](screenshots/lab37-2.png)
+![Image](screenshots/lab37-3.png)

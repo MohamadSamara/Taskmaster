@@ -64,21 +64,37 @@
     </LinearLayout>
 
 
-<!--    <ImageView-->
-<!--        android:id="@+id/editTaskImageImageView"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        tools2:srcCompat="@tools:sample/avatars" />-->
+    <ImageView
+        android:id="@+id/addTaskImageImageView"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        tools2:srcCompat="@tools:sample/avatars" />
 
-<!--    <Button-->
-<!--        android:id="@+id/editTaskAddImageButton"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginStart="16dp"-->
-<!--        android:layout_marginTop="36dp"-->
-<!--        android:text="Add Image"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toBottomOf="@+id/textView16" />-->
+    <LinearLayout
+        android:id="@+id/linearLayoutForButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/addTaskAddImageButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="40dp"
+            android:text="Add Image" />
+
+        <Button
+            android:id="@+id/addTaskDeleteImageButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="90dp"
+            android:text="Delete Image" />
+
+    </LinearLayout>
 
     <Button
         android:id="@+id/addTaskToTotalbtn"
