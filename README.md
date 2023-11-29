@@ -185,7 +185,16 @@ Picture For Tests Result :
 
 ## For next Lab (Lab 38)
 
-** An intent filter was added to the application such that a user can hit the “share” button on an image in another application, choose TaskMaster as the app to share that image with, and be taken directly to the Add a Task activity with that image pre-selected. **
+**An intent filter was added to the application such that a user can hit the “share” button on an image in another application, choose TaskMaster as the app to share that image with, and be taken directly to the Add a Task activity with that image pre-selected.**
 
 ![Image](screenshots/lab38-1.png)
 ![Image](screenshots/lab38-2.png)
+
+
+## For next Lab (Lab 39)
+
+**When the user adds a task, their location will be saved and included as part of the saved Task.**
+
+![Image](screenshots/lab39-1.png)
+![Image](screenshots/lab39-2.png)
+![Image](screenshots/lab39-3.png)

@@ -3,13 +3,18 @@ import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
@@ -27,13 +32,22 @@ import com.amplifyframework.core.Amplify;
 import com.amplifyframework.datastore.generated.model.Task;
 import com.amplifyframework.datastore.generated.model.TaskStatusEnum;
 import com.amplifyframework.datastore.generated.model.Team;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.CancellationToken;
+import com.google.android.gms.tasks.OnTokenCanceledListener;
 import com.google.android.material.snackbar.Snackbar;
 import com.love2code.taskmaster.R;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -50,12 +64,83 @@ public class AddTaskActivity extends AppCompatActivity {
 
     private String s3ImageKey = "";
 
+    static final int LOCATION_POLLING_INTERVAL = 5 * 1000;
+
+    Geocoder geocoder=null;
+    FusedLocationProviderClient locationProviderClient = null;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_task);
 
         teamFuture = new CompletableFuture<>();
+
+        requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+
+        locationProviderClient = LocationServices.getFusedLocationProviderClient(getApplicationContext());
+        locationProviderClient.flushLocations();
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        locationProviderClient.getLastLocation().addOnSuccessListener(location ->
+        {
+            if (location == null) {
+                Log.e(TAG, "Location CallBack was null");
+            }
+            String currentLatitude = Double.toString(location.getLatitude());
+            String currentLongitude = Double.toString(location.getLongitude());
+            Log.i(TAG, "Our userLatitude: " + location.getLatitude());
+            Log.i(TAG, "Our userLongitude: " + location.getLongitude());
+        });
+
+        locationProviderClient.getCurrentLocation(LocationRequest.PRIORITY_HIGH_ACCURACY, new CancellationToken() {
+            @NonNull
+            @Override
+            public CancellationToken onCanceledRequested(@NonNull OnTokenCanceledListener onTokenCanceledListener) {
+                return null;
+            }
+
+            @Override
+            public boolean isCancellationRequested() {
+                return false;
+            }
+        });
+
+        geocoder=new Geocoder(getApplicationContext(), Locale.getDefault());
+        LocationRequest locationRequest= LocationRequest.create();
+        locationRequest.setInterval(LOCATION_POLLING_INTERVAL);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        LocationCallback locationCallback = new LocationCallback()
+        {
+            @Override
+            public void onLocationResult(@NonNull LocationResult locationResult) {
+                super.onLocationResult(locationResult);
+
+                try {
+                    String address = geocoder.getFromLocation(
+                                    locationResult.getLastLocation().getLatitude(),
+                                    locationResult.getLastLocation().getLongitude(),
+                                    1)
+                            .get(0)
+                            .getAddressLine(0);
+                    Log.i(TAG,"Repeating current location is: "+address);
+                }catch (IOException ioe){
+                    Log.e(TAG, "Could not get subscribed location: "+ioe.getMessage(), ioe);
+                }
+            }
+        };
+
+        locationProviderClient.requestLocationUpdates(locationRequest, locationCallback, getMainLooper());
 
         activityResultLauncher = getImagePickingActivityResultLauncher();
 
@@ -75,10 +160,7 @@ public class AddTaskActivity extends AppCompatActivity {
             String callingText = callingIntent.getStringExtra(Intent.EXTRA_TEXT);
 
             if (callingText != null) {
-                // Clean the text by removing unwanted links or formatting
                 String cleanedText = cleanText(callingText);
-
-                // Set the cleaned text in the UI
                 ((EditText) findViewById(R.id.taskTitleEdtTxt)).setText(cleanedText);
             }
         }
@@ -92,11 +174,11 @@ public class AddTaskActivity extends AppCompatActivity {
                 try {
                     incomingImageFileInputStream = getContentResolver().openInputStream(incomingImageFileUri);
 
-                    ImageView productImageView = findViewById(R.id.addTaskImageImageView);
+                    ImageView taskImageView = findViewById(R.id.addTaskImageImageView);
 
-                    if (productImageView != null) {
+                    if (taskImageView != null) {
 
-                        productImageView.setImageBitmap(BitmapFactory.decodeStream(incomingImageFileInputStream));
+                        taskImageView.setImageBitmap(BitmapFactory.decodeStream(incomingImageFileInputStream));
                     }else {
                         Log.e(TAG, "ImageView is null for some reasons");
                     }
@@ -153,11 +235,50 @@ public class AddTaskActivity extends AppCompatActivity {
     private void setUpSaveButton() {
         Button saveButton = findViewById(R.id.addTaskToTotalbtn);
         saveButton.setOnClickListener(v -> {
-            saveTask(s3ImageKey);
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
+
+            locationProviderClient.getLastLocation().addOnSuccessListener(location ->
+                            {
+                                if (location == null) {
+                                    Log.e(TAG, "Location CallBack was null");
+                                }
+                                String currentLatitude = Double.toString(location.getLatitude());
+                                String currentLongitude = Double.toString(location.getLongitude());
+                                Log.i(TAG, "Our userLatitude: " + location.getLatitude());
+                                Log.i(TAG, "Our userLongitude: " + location.getLongitude());
+                                saveTask(s3ImageKey, currentLatitude, currentLongitude);
+
+                            }
+
+                    ).addOnCanceledListener(() ->
+                    {
+                        Log.e(TAG, "Location request was Canceled");
+                    })
+                    .addOnFailureListener(failure ->
+                    {
+                        Log.e(TAG, "Location request failed, Error was: " + failure.getMessage(), failure.getCause());
+                    })
+                    .addOnCompleteListener(complete ->
+                    {
+                        Log.e(TAG, "Location request Completed");
+                    });
         });
+
+
     }
 
-    private void saveTask(String imageS3Key) {
+
+    private void saveTask(String imageS3Key , String latitude, String longitude) {
+
         List<Team> teams = null;
         String teamToSaveString = teamNameSpinner.getSelectedItem().toString();
         try {
@@ -168,12 +289,17 @@ public class AddTaskActivity extends AppCompatActivity {
 
         Team teamToSave = teams.stream().filter(c -> c.getName().equals(teamToSaveString)).findAny().orElseThrow(RuntimeException::new);
 
+
+
+
         Task taskToSave = Task.builder()
                 .title(titleEditText.getText().toString())
                 .description(descriptionEditText.getText().toString())
                 .teamName(teamToSave)
                 .taskStatusEnum(TaskCategoryFromString(taskCategorySpinner.getSelectedItem().toString()))
                 .taskImageS3Key(imageS3Key)
+                .taskLongitude(longitude)
+                .taskLatitude(latitude)
                 .build();
 
         Amplify.API.mutate(

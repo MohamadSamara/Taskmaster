@@ -7,6 +7,8 @@ subscription OnCreateTask($filter: ModelSubscriptionTaskFilterInput) {
     description
     taskStatusEnum
     taskImageS3Key
+    taskLatitude
+    taskLongitude
     teamId
     teamName {
       id
@@ -28,6 +30,8 @@ subscription OnUpdateTask($filter: ModelSubscriptionTaskFilterInput) {
     description
     taskStatusEnum
     taskImageS3Key
+    taskLatitude
+    taskLongitude
     teamId
     teamName {
       id
@@ -49,6 +53,8 @@ subscription OnDeleteTask($filter: ModelSubscriptionTaskFilterInput) {
     description
     taskStatusEnum
     taskImageS3Key
+    taskLatitude
+    taskLongitude
     teamId
     teamName {
       id
