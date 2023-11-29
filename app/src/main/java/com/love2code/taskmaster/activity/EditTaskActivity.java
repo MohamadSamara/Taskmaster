@@ -21,6 +21,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.amplifyframework.api.graphql.model.ModelMutation;
 import com.amplifyframework.api.graphql.model.ModelQuery;
@@ -46,6 +47,8 @@ public class EditTaskActivity extends AppCompatActivity {
     private CompletableFuture<List<Team>> teamFuture = null;
     private Task taskToEdit= null;
     private EditText titleEditText;
+    private TextView textViewLongitude;
+    private TextView textViewLatitude;
     private EditText descriptionEditText;
     private Spinner taskCategorySpinner = null;
     private Spinner teamNameSpinner = null;
@@ -117,6 +120,13 @@ public class EditTaskActivity extends AppCompatActivity {
         titleEditText.setText(taskToEdit.getTitle());
         descriptionEditText = ((EditText) findViewById(R.id.editTextNewDescription));
         descriptionEditText.setText(taskToEdit.getDescription());
+
+        textViewLongitude = findViewById(R.id.textViewLongitude);
+        textViewLongitude.setText(taskToEdit.getTaskLongitude());
+
+        textViewLatitude = findViewById(R.id.textViewLatitude);
+        textViewLatitude.setText(taskToEdit.getTaskLatitude());
+
 
         s3ImageKey = taskToEdit.getTaskImageS3Key();
         if (s3ImageKey != null && !s3ImageKey.isEmpty())
@@ -236,47 +246,6 @@ public class EditTaskActivity extends AppCompatActivity {
                 failureResponse -> Log.i(TAG, "EditTaskActivity.onCreate(): failed with this response: " + failureResponse)  // failure callback
         );
     }
-//    private void setUpSaveButton()
-//    {
-//        Button saveButton = (Button)findViewById(R.id.editTaskButton);
-//        saveButton.setOnClickListener(v ->
-//        {
-//            List<Team> teams = null;
-//            String teamToSaveString = teamNameSpinner.getSelectedItem().toString();
-//            try
-//            {
-//                teams = teamFuture.get();
-//            }
-//            catch (InterruptedException ie)
-//            {
-//                Log.e(TAG, "InterruptedException while getting product");
-//                Thread.currentThread().interrupt();
-//            }
-//            catch (ExecutionException ee)
-//            {
-//                Log.e(TAG, "ExecutionException while getting product");
-//            }
-//            Team teamToSave = teams.stream().filter(c -> c.getName().equals(teamToSaveString)).findAny().orElseThrow(RuntimeException::new);
-//            Task taskToSave = Task.builder()
-//                    .title(titleEditText.getText().toString())
-//                    .id(taskToEdit.getId())
-//                    .description(descriptionEditText.getText().toString())
-//                    .teamName(teamToSave)
-//                    .taskStatusEnum(TaskCategoryFromString(taskCategorySpinner.getSelectedItem().toString()))
-//                    .build();
-//
-//            Amplify.API.mutate(
-//                    ModelMutation.update(taskToSave),  // making a GraphQL request to the cloud
-//                    successResponse ->
-//                    {
-//                        Log.i(TAG, "EditTaskActivity.onCreate(): edited a Task successfully");
-//                        // TODO: Display a Snack bar
-//                        Snackbar.make(findViewById(R.id.editTaskAcivity), "Task saved!", Snackbar.LENGTH_SHORT).show();
-//                    },  // success callback
-//                    failureResponse -> Log.i(TAG, "EditTaskActivity.onCreate(): failed with this response: " + failureResponse)  // failure callback
-//            );
-//        });
-//    }
 
     public static TaskStatusEnum TaskCategoryFromString(String inputTaskStateEnumText){
         for (TaskStatusEnum taskStatusEnum : TaskStatusEnum.values()){
@@ -380,10 +349,9 @@ public class EditTaskActivity extends AppCompatActivity {
                 success ->
                 {
                     Log.i(TAG, "Succeeded in getting file uploaded to S3! Key is: " + success.getKey());
-                    // Part 4: Update/save our Product object to have an image key
                     saveTask(success.getKey());
                     updateImageButtons();
-                    ImageView productImageView = findViewById(R.id.editTaskImageImageView);
+                    ImageView taskImageView = findViewById(R.id.editTaskImageImageView);
                     InputStream pickedImageInputStreamCopy = null;  // need to make a copy because InputStreams cannot be reused!
                     try
                     {
@@ -393,7 +361,7 @@ public class EditTaskActivity extends AppCompatActivity {
                     {
                         Log.e(TAG, "Could not get file stream from URI! " + fnfe.getMessage(), fnfe);
                     }
-                    productImageView.setImageBitmap(BitmapFactory.decodeStream(pickedImageInputStreamCopy));
+                    taskImageView.setImageBitmap(BitmapFactory.decodeStream(pickedImageInputStreamCopy));
 
                 },
                 failure ->
@@ -421,8 +389,8 @@ public class EditTaskActivity extends AppCompatActivity {
                         Log.e(TAG, "Failure in deleting file on S3 with key: " + s3ImageKey + " with error: " + failure.getMessage());
                     }
             );
-            ImageView productImageView = findViewById(R.id.editTaskImageImageView);
-            productImageView.setImageResource(android.R.color.transparent);
+            ImageView taskImageView = findViewById(R.id.editTaskImageImageView);
+            taskImageView.setImageResource(android.R.color.transparent);
 
             saveTask("");
             switchFromDeleteButtonToAddButton(deleteImageButton);

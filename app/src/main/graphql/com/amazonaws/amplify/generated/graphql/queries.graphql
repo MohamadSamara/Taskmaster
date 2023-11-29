@@ -7,6 +7,8 @@ query GetTask($id: ID!) {
     description
     taskStatusEnum
     taskImageS3Key
+    taskLatitude
+    taskLongitude
     teamId
     teamName {
       id
@@ -33,6 +35,8 @@ query ListTasks(
       description
       taskStatusEnum
       taskImageS3Key
+      taskLatitude
+      taskLongitude
       teamId
       createdAt
       updatedAt
@@ -97,6 +101,8 @@ query TasksByTeamIdAndTitle(
       description
       taskStatusEnum
       taskImageS3Key
+      taskLatitude
+      taskLongitude
       teamId
       createdAt
       updatedAt
