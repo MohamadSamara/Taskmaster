@@ -198,3 +198,12 @@ Picture For Tests Result :
 ![Image](screenshots/lab39-1.png)
 ![Image](screenshots/lab39-2.png)
 ![Image](screenshots/lab39-3.png)
+
+
+## For next Lab (Lab 41)
+
+**Added Analytics Events are now being tracked using Amazon Pinpoint. Everytime a user enters the Home Activity, it is recorded**
+**On task body there is a button -> on click listener : Added ability to hear Task description spoken aloud on View Task page**
+
+![Image](screenshots/lab41-1.png)
+![Image](screenshots/lab41-2.png)
