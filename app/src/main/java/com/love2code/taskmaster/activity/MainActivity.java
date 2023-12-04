@@ -3,6 +3,7 @@ package com.love2code.taskmaster.activity;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -13,10 +14,14 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amplifyframework.AmplifyException;
+import com.amplifyframework.analytics.AnalyticsEvent;
+import com.amplifyframework.analytics.pinpoint.AWSPinpointAnalyticsPlugin;
 import com.amplifyframework.api.graphql.model.ModelQuery;
 import com.amplifyframework.auth.AuthUser;
 import com.amplifyframework.auth.AuthUserAttribute;
 import com.amplifyframework.auth.AuthUserAttributeKey;
+import com.amplifyframework.auth.cognito.AWSCognitoAuthPlugin;
 import com.amplifyframework.auth.options.AuthSignUpOptions;
 import com.amplifyframework.core.Amplify;
 import com.amplifyframework.datastore.generated.model.Task;
@@ -28,6 +33,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -40,7 +46,6 @@ public class MainActivity extends AppCompatActivity {
     public static final String TASK_STATE_TAG = "taskState";
     public static final String TAG = "TaskActivity";
     public static final String MAIN_ID_TAG = "Main ID Tag";
-
 
 
     @Override
@@ -134,11 +139,8 @@ public class MainActivity extends AppCompatActivity {
 //        );
 
 
-
-        preferences = PreferenceManager.getDefaultSharedPreferences(this);
-
-        tasks = new ArrayList<>();
-
+        init();
+        analytic();
         Amplify.API.query(
                 ModelQuery.list(Task.class),
                 success -> {
@@ -193,17 +195,17 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        String emptyFilename= "emptyTestFileName";
+        String emptyFilename = "emptyTestFileName";
         File emptyFile = new File(getApplicationContext().getFilesDir(), emptyFilename);
 
         try {
-            BufferedWriter emptyFileBufferedWriter= new BufferedWriter(new FileWriter(emptyFile));
+            BufferedWriter emptyFileBufferedWriter = new BufferedWriter(new FileWriter(emptyFile));
 
             emptyFileBufferedWriter.append("Some text here from Mohamad\nAnother lib from Mohamad");
 
             emptyFileBufferedWriter.close();
-        }catch (IOException ioe){
-            Log.i(TAG, "could not write locally with filename: "+ emptyFilename);
+        } catch (IOException ioe) {
+            Log.i(TAG, "could not write locally with filename: " + emptyFilename);
         }
 
         String emptyFileS3Key = "someFileOnS3.txt";
@@ -224,6 +226,17 @@ public class MainActivity extends AppCompatActivity {
         setUpLoginAndLogoutButton();
     }
 
+    private void analytic() {
+        AnalyticsEvent event = AnalyticsEvent.builder()
+                .name("openedApp")
+                .addProperty("time", Long.toString(new Date().getTime()))
+                .addProperty("trackingEvent", " main activity opened")
+                .build();
+
+        Amplify.Analytics.recordEvent(event);
+
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -233,15 +246,15 @@ public class MainActivity extends AppCompatActivity {
 
 
         AuthUser authUser = Amplify.Auth.getCurrentUser();
-        String username="";
-        if (authUser == null){
+        String username = "";
+        if (authUser == null) {
             Button loginButton = (Button) findViewById(R.id.taskListLoginButton);
             loginButton.setVisibility(View.VISIBLE);
             Button logoutButton = (Button) findViewById(R.id.taskListLogoutButton);
             logoutButton.setVisibility(View.INVISIBLE);
-        }else{
+        } else {
             username = authUser.getUsername();
-            Log.i(TAG, "Username is: "+ username);
+            Log.i(TAG, "Username is: " + username);
             Button loginButton = (Button) findViewById(R.id.taskListLoginButton);
             loginButton.setVisibility(View.INVISIBLE);
             Button logoutButton = (Button) findViewById(R.id.taskListLogoutButton);
@@ -251,20 +264,20 @@ public class MainActivity extends AppCompatActivity {
             Amplify.Auth.fetchUserAttributes(
                     success ->
                     {
-                        Log.i(TAG, "Fetch user attributes succeeded for username: "+username2);
-                        for (AuthUserAttribute userAttribute: success){
-                            if(userAttribute.getKey().getKeyString().equals("email")){
+                        Log.i(TAG, "Fetch user attributes succeeded for username: " + username2);
+                        for (AuthUserAttribute userAttribute : success) {
+                            if (userAttribute.getKey().getKeyString().equals("email")) {
                                 String userEmail = userAttribute.getValue();
                                 runOnUiThread(() ->
                                 {
-                                    ((TextView)findViewById(R.id.usernameTxt)).setText(userEmail);
+                                    ((TextView) findViewById(R.id.usernameTxt)).setText(userEmail);
                                 });
                             }
                         }
                     },
                     failure ->
                     {
-                        Log.i(TAG, "Fetch user attributes failed: "+failure.toString());
+                        Log.i(TAG, "Fetch user attributes failed: " + failure.toString());
                     }
             );
         }
@@ -278,11 +291,10 @@ public class MainActivity extends AppCompatActivity {
                 success -> {
                     Log.i(TAG, "Updated Tasks Successfully!");
                     tasks.clear();
-                    for(Task databaseTask : success.getData()){
-                        if (userTeamName.equals("No Team")){
+                    for (Task databaseTask : success.getData()) {
+                        if (userTeamName.equals("No Team")) {
                             tasks.add(databaseTask);
-                        }
-                        else if (databaseTask.getTeamName().getName().equals(userTeamName)) {
+                        } else if (databaseTask.getTeamName().getName().equals(userTeamName)) {
                             tasks.add(databaseTask);
                         }
                     }
@@ -296,6 +308,11 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void init() {
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        tasks = new ArrayList<>();
+
+    }
 
     private void setUpTaskListRecyclerView() {
         //TODO: step 1-1: Add a RecyclerView to the Activity in the WSYIWYG editor
@@ -314,7 +331,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void setUpLoginAndLogoutButton(){
+    private void setUpLoginAndLogoutButton() {
         Button loginButton = (Button) findViewById(R.id.taskListLoginButton);
         loginButton.setOnClickListener(v ->
         {
@@ -323,15 +340,15 @@ public class MainActivity extends AppCompatActivity {
         });
 
         Button logoutButton = (Button) findViewById(R.id.taskListLogoutButton);
-        logoutButton.setOnClickListener(v->
+        logoutButton.setOnClickListener(v ->
         {
             Amplify.Auth.signOut(
                     () ->
                     {
-                        Log.i(TAG,"Logout succeeded");
+                        Log.i(TAG, "Logout succeeded");
                         runOnUiThread(() ->
                         {
-                            ((TextView)findViewById(R.id.usernameTxt)).setText("");
+                            ((TextView) findViewById(R.id.usernameTxt)).setText("");
                         });
                         Intent goToLogInIntent = new Intent(MainActivity.this, LoginActivity.class);
                         startActivity(goToLogInIntent);

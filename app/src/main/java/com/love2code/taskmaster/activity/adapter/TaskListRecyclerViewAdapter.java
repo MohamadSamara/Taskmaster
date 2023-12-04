@@ -60,7 +60,7 @@ import java.util.List;
          //TODO: step 3-3: create a onClickListener, make an intent inside it and call this intent with extra to go to another activity
          View productViewHolder = holder.itemView;
          productViewHolder.setOnClickListener(view -> {
-             Intent goToOrderFormIntent = new Intent(callingActivity, EditTaskActivity.class);
+             Intent goToOrderFormIntent = new Intent(callingActivity, TaskDetailActivity.class);
 
              goToOrderFormIntent.putExtra(MainActivity.MAIN_ID_TAG,  task.getId());
              goToOrderFormIntent.putExtra(MainActivity.TASK_NAME_TAG,  taskName);
